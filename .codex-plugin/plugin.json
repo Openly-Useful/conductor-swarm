@@ -1,0 +1,40 @@
+{
+  "name": "conductor-swarm",
+  "version": "1.0.0",
+  "description": "Model-agnostic orchestration that discovers available capabilities, activates only what the work needs, and verifies completion.",
+  "author": {
+    "name": "MeekPhills",
+    "url": "https://github.com/MeekPhills"
+  },
+  "homepage": "https://github.com/MeekPhills/conductor-swarm",
+  "repository": "https://github.com/MeekPhills/conductor-swarm",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "orchestration",
+    "multi-agent",
+    "model-routing",
+    "workflow-recovery",
+    "token-efficiency"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Conductor Swarm",
+    "shortDescription": "Route models and skills to verified completion",
+    "longDescription": "A model-agnostic parent orchestrator that inventories exposed models, skills, tools, and agents; activates the smallest sufficient capability set; resumes existing work through Pickup Swarm; and enforces review, integration, and verification before completion.",
+    "developerName": "MeekPhills",
+    "category": "Productivity",
+    "capabilities": [
+      "Orchestration"
+    ],
+    "websiteURL": "https://github.com/MeekPhills/conductor-swarm",
+    "privacyPolicyURL": "https://github.com/MeekPhills/conductor-swarm/blob/main/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/MeekPhills/conductor-swarm/blob/main/TERMS.md",
+    "defaultPrompt": [
+      "Inventory my available models and skills, then route this project to completion.",
+      "Resume paused workflows and prepare safe sub-agent continuation briefs.",
+      "Optimize this plan's token use without cutting tests, review, or quality."
+    ],
+    "brandColor": "#3B4CCA"
+  }
+}

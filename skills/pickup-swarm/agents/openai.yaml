@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pickup Swarm"
+  short_description: "Recover workflows and prepare safe continuation"
+  default_prompt: "Use $pickup-swarm to discover existing workflows, verify where each stopped, identify safe optimizations, and prepare continuation briefs."

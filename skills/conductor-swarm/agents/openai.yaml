@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conductor Swarm"
+  short_description: "Route models and skills to verified completion"
+  default_prompt: "Use $conductor-swarm to inventory available capabilities, activate only the skills and model profiles this goal needs, and drive every item to verified completion."
