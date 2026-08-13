@@ -50,7 +50,7 @@ Evaluate every stream for duplication, critical-path order, handoff quality, par
 | Opportunity | Expected benefit | Regression risk | Proof required | Decision |
 |---|---|---|---|---|
 
-Classify each as **safe now**, **separate work stream**, **defer**, or **reject**. Apply only after capturing the current diff/state, passing baseline checks, preserving behavior and user changes, isolating a reversible change, and defining measurable proof. Run the same checks before and after. Stop or revert on regression, ambiguity, or unproven benefit.
+Classify each as **safe now**, **separate work stream**, **defer**, or **reject**. Preserve public behavior, data, and user changes unless the user explicitly authorizes otherwise. Apply only after capturing the current diff/state, passing baseline checks, and defining measurable proof. Make the smallest reversible change, isolate it from required recovery work, and run the same checks before and after. Revert or stop if behavior regresses, evidence is ambiguous, or the benefit is unproven.
 
 Keep speculative refactors, dependency upgrades, migrations, broad rewrites, and destructive cleanup separate from recovery work.
 
