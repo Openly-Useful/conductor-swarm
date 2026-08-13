@@ -3,7 +3,7 @@
 **Discover. Route. Finish.**
 
 [![Agent Skills](https://img.shields.io/badge/Agent_Skills-compatible-3B4CCA)](https://agentskills.io)
-[![skills.sh](https://skills.sh/b/MeekPhills/conductor-swarm)](https://skills.sh/MeekPhills/conductor-swarm)
+[![skills.sh](https://skills.sh/b/Openly-Useful/conductor-swarm)](https://skills.sh/Openly-Useful/conductor-swarm)
 [![License: MIT](https://img.shields.io/badge/License-MIT-0B7285.svg)](LICENSE)
 
 Conductor Swarm is a model-agnostic parent orchestrator for complex agent work. It inventories the models, skills, tools, connectors, and agents that the current runtime actually exposes; activates only the capabilities the current phase needs; and keeps work moving until every in-scope acceptance criterion has current verification evidence.
@@ -51,13 +51,13 @@ The skill can route only among models and switching controls exposed by the host
 ### GitHub CLI
 
 ```bash
-gh skill install MeekPhills/conductor-swarm --all --agent universal --scope user
+gh skill install Openly-Useful/conductor-swarm --all --agent universal --scope user
 ```
 
 ### skills.sh-compatible CLI
 
 ```bash
-npx skills add MeekPhills/conductor-swarm --skill conductor-swarm pickup-swarm
+npx skills add Openly-Useful/conductor-swarm --skill conductor-swarm pickup-swarm
 ```
 
 ### Codex skill installer
@@ -66,7 +66,7 @@ Ask Codex:
 
 ```text
 Use $skill-installer to install both skills from
-https://github.com/MeekPhills/conductor-swarm/tree/main/skills
+https://github.com/Openly-Useful/conductor-swarm/tree/main/skills
 ```
 
 The repository also includes a `.codex-plugin/plugin.json` manifest for packaging as a skill-only ChatGPT/Codex plugin.
@@ -103,6 +103,8 @@ identify safe optimizations, and prepare clean continuation briefs.
 - Codex/ChatGPT skill-only plugin manifest under `.codex-plugin/plugin.json`
 - skills.sh-compatible repository layout
 
+See the tested [compatibility matrix](COMPATIBILITY.md) and the repeatable behavioral contracts in [`evals/cases.yaml`](evals/cases.yaml).
+
 ## Support and policies
 
 - [Support](SUPPORT.md)
@@ -112,4 +114,4 @@ identify safe optimizations, and prepare clean continuation briefs.
 
 ## License
 
-MIT © 2026 MeekPhills
+MIT © 2026 Openly Useful contributors

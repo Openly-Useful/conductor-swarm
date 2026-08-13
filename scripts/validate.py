@@ -90,7 +90,7 @@ def validate_skill(skill_dir: Path) -> None:
 
 def validate_plugin() -> None:
     manifest = json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
-    if manifest["name"] != "conductor-swarm" or manifest["version"] != "1.0.0":
+    if manifest["name"] != "conductor-swarm" or manifest["version"] != "1.0.1":
         raise AssertionError("plugin identity/version mismatch")
     if manifest.get("skills") != "./skills/":
         raise AssertionError("plugin must expose ./skills/")
