@@ -131,31 +131,21 @@ def validate_registration() -> None:
     if publication != {"allowed": False, "authorization": "withheld"}:
         raise AssertionError("external publication must remain withheld")
 
-    repo_blob = "https://github.com/Openly-Useful/agent-workflow-swarms/blob/main/"
+    site_blob = "https://github.com/Openly-Useful/openlyuseful.org/blob/main/"
     policies = publisher.get("policies", {})
     mirrors = publisher.get("policyMirrors")
     expected_mirrors = {
-        "privacy": repo_blob + "PRIVACY.md",
-        "terms": repo_blob + "TERMS.md",
-        "security": repo_blob + "SECURITY.md",
-        "support": repo_blob + "SUPPORT.md",
+        "privacy": site_blob + "legal/privacy.html",
+        "terms": site_blob + "legal/terms.html",
+        "security": site_blob + "security.html",
+        "support": site_blob + "support.html",
     }
     if mirrors != expected_mirrors:
-        raise AssertionError("policy mirrors must reference the version-controlled repository pages")
+        raise AssertionError("policy mirrors must reference the version-controlled site repository sources")
     if sorted(mirrors) != sorted(policies):
         raise AssertionError("policy mirrors must map 1:1 to the declared live policy pages")
-    if publisher.get("authorityManifestMirror") != repo_blob + "publisher/manifest.json":
-        raise AssertionError("authority manifest mirror must reference the version-controlled repository copy")
-    authority = read_json("publisher/manifest.json")
-    if authority.get("schemaVersion") != 1 or authority.get("canonicalURL") != publisher.get("authorityManifest"):
-        raise AssertionError("version-controlled authority manifest must declare its live canonical URL")
-    if authority.get("publisher") != publisher.get("publisher"):
-        raise AssertionError("authority manifest publisher identity must match publisher.json")
-    if authority.get("policies") != policies or authority.get("policyMirrors") != mirrors:
-        raise AssertionError("authority manifest policy pages and mirrors must match publisher.json")
-    components = authority.get("components")
-    if components != [{"name": "conductor-swarm", "repository": "https://github.com/Openly-Useful/agent-workflow-swarms"}]:
-        raise AssertionError("authority manifest component listing mismatch")
+    if publisher.get("authorityManifestMirror") != site_blob + "publisher/manifest.json":
+        raise AssertionError("authority manifest mirror must reference the version-controlled site repository source")
 
     author = {"name": identity["displayName"], "email": identity["publicContact"], "url": identity["homepage"]}
     common = {

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "authorityManifest": "https://openlyuseful.org/publisher/manifest.json",
-  "authorityManifestMirror": "https://github.com/Openly-Useful/agent-workflow-swarms/blob/main/publisher/manifest.json",
+  "authorityManifestMirror": "https://github.com/Openly-Useful/openlyuseful.org/blob/main/publisher/manifest.json",
   "publisher": {
     "displayName": "Openly Useful",
     "homepage": "https://openlyuseful.org",
@@ -24,10 +24,10 @@
     "support": "https://openlyuseful.org/support"
   },
   "policyMirrors": {
-    "privacy": "https://github.com/Openly-Useful/agent-workflow-swarms/blob/main/PRIVACY.md",
-    "terms": "https://github.com/Openly-Useful/agent-workflow-swarms/blob/main/TERMS.md",
-    "security": "https://github.com/Openly-Useful/agent-workflow-swarms/blob/main/SECURITY.md",
-    "support": "https://github.com/Openly-Useful/agent-workflow-swarms/blob/main/SUPPORT.md"
+    "privacy": "https://github.com/Openly-Useful/openlyuseful.org/blob/main/legal/privacy.html",
+    "terms": "https://github.com/Openly-Useful/openlyuseful.org/blob/main/legal/terms.html",
+    "security": "https://github.com/Openly-Useful/openlyuseful.org/blob/main/security.html",
+    "support": "https://github.com/Openly-Useful/openlyuseful.org/blob/main/support.html"
   },
   "namespaces": {
     "npm": "@openly-useful",
