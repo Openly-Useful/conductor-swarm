@@ -1,12 +1,12 @@
-# Conductor Swarm
+# Agent Workflow Swarms
 
 **Discover. Route. Finish.**
 
 [![Agent Skills](https://img.shields.io/badge/Agent_Skills-compatible-3B4CCA)](https://agentskills.io)
-[![skills.sh](https://skills.sh/b/Openly-Useful/conductor-swarm)](https://skills.sh/Openly-Useful/conductor-swarm)
+[![skills.sh](https://skills.sh/b/Openly-Useful/agent-workflow-swarms)](https://skills.sh/Openly-Useful/agent-workflow-swarms)
 [![License: MIT](https://img.shields.io/badge/License-MIT-0B7285.svg)](LICENSE)
 
-Conductor Swarm is a model-agnostic parent orchestrator for complex agent work. It inventories the models, skills, tools, connectors, and agents that the current runtime actually exposes; activates only the capabilities the current phase needs; and keeps work moving until every in-scope acceptance criterion has current verification evidence.
+Agent Workflow Swarms is a model-agnostic collection for recovering, orchestrating, and transferring complex agent work. Its Conductor Swarm inventories the models, skills, tools, connectors, and agents that the current runtime actually exposes; activates only the capabilities the current phase needs; and keeps work moving until every in-scope acceptance criterion has current verification evidence.
 
 It is quality-first, not “cheapest-model-first.” Token and latency savings come from progressive skill loading, bounded context, reusable checkpoints, and sensible routing—not from skipping review, tests, integration, or risk work.
 
@@ -59,13 +59,13 @@ The skill can route only among models and switching controls exposed by the host
 ### GitHub CLI
 
 ```bash
-gh skill install Openly-Useful/conductor-swarm --all --agent universal --scope user
+gh skill install Openly-Useful/agent-workflow-swarms --all --agent universal --scope user
 ```
 
 ### skills.sh-compatible CLI
 
 ```bash
-npx skills add Openly-Useful/conductor-swarm --skill conductor-swarm pickup-swarm cross-tool-continuity-swarm
+npx skills add Openly-Useful/agent-workflow-swarms --skill conductor-swarm pickup-swarm cross-tool-continuity-swarm
 ```
 
 ### Codex skill installer
@@ -73,8 +73,8 @@ npx skills add Openly-Useful/conductor-swarm --skill conductor-swarm pickup-swar
 Ask Codex:
 
 ```text
-Use $skill-installer to install both skills from
-https://github.com/Openly-Useful/conductor-swarm/tree/main/skills
+Use $skill-installer to install all three skills from
+https://github.com/Openly-Useful/agent-workflow-swarms/tree/main/skills
 ```
 
 The repository also includes a `.codex-plugin/plugin.json` manifest for packaging as a skill-only ChatGPT/Codex plugin.
