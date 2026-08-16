@@ -1,4 +1,4 @@
 interface:
   display_name: "Cross-Tool Continuity Swarm"
-  short_description: "Audit, sync, and hand off project work safely"
-  default_prompt: "Use $cross-tool-continuity-swarm to audit this project, prepare a verified handoff, and resume it in another AI coding tool."
+  short_description: "Capture lineage and launch work across tools"
+  default_prompt: "Use $cross-tool-continuity-swarm to capture this task’s local session lineage and prepare a verified one-command Claude Code handoff."

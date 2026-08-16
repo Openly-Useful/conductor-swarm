@@ -53,6 +53,7 @@ SYNC_INPUT_FIELDS = {
     "provenance",
     "evidence",
 }
+RECOVERY_INPUT_FIELDS = {"context", "acceptance", "verification", "artifacts"}
 PROHIBITED_KEY_PARTS = (
     "absolute_path",
     "credential",
@@ -334,6 +335,32 @@ def stage_json(target: AuditTarget, value: Any, *, label: str) -> AuditStage:
         raise
 
 
+def stage_text(target: AuditTarget, value: str, *, label: str) -> AuditStage:
+    """Write/fsync a UTF-8 text replacement through the checked target FD."""
+    nofollow, _ = require_safe_descriptor_support()
+    name = f".continuity-{target.name}.{os.getpid()}.{secrets.token_hex(12)}.tmp"
+    payload = value.encode("utf-8")
+    descriptor: int | None = None
+    try:
+        descriptor = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | nofollow, 0o600, dir_fd=target.parent_descriptor)
+        write_descriptor_payload(descriptor, payload, label=label)
+        replacement_identity = file_identity(os.fstat(descriptor))
+        os.close(descriptor)
+        descriptor = None
+        return AuditStage(target, name, replacement_identity, hashlib.sha256(payload).hexdigest())
+    except Exception:
+        if descriptor is not None:
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
+        try:
+            os.unlink(name, dir_fd=target.parent_descriptor)
+        except OSError:
+            pass
+        raise
+
+
 def target_matches_stage(stage: AuditStage, *, label: str) -> bool:
     current = inspect_regular_target(stage.target.parent_descriptor, stage.target.name, label=label)
     if stage.target.identity is None:
@@ -545,6 +572,21 @@ def preparation_basis_errors(state: dict[str, Any]) -> list[str]:
         errors.append("prepared state requires persisted audit.status 'passed'")
     if not has_verified_evidence(state):
         errors.append("prepared state requires persisted verified evidence")
+    context = state.get("context")
+    if not isinstance(context, dict) or not isinstance(context.get("summary"), str) or not context["summary"].strip():
+        errors.append("prepared state requires a recovered context summary")
+    if not isinstance(context, dict) or not isinstance(context.get("next_action"), str) or not context["next_action"].strip():
+        errors.append("prepared state requires an exact next action")
+    acceptance = state.get("acceptance")
+    if not isinstance(acceptance, list) or not acceptance:
+        errors.append("prepared state requires at least one acceptance criterion")
+    verification = state.get("verification")
+    if not isinstance(verification, list) or not any(
+        isinstance(item, dict)
+        and any(isinstance(item.get(field), str) and item[field].strip() for field in ("command", "check"))
+        for item in verification
+    ):
+        errors.append("prepared state requires at least one verification command or check")
     return errors
 
 
@@ -626,6 +668,7 @@ def validate_state(state: Any, *, require_prepared: bool = False) -> list[str]:
                 continue
             errors.extend(required_field_errors(item, {"id", "criterion"}, path))
             errors.extend(string_field_errors(item, ("id", "criterion"), path))
+            errors.extend(nonempty_string_field_errors(item, ("id", "criterion"), path))
 
     for field in ("verification", "artifacts"):
         items = state.get(field)
@@ -824,6 +867,73 @@ def command_capture(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_recover(args: argparse.Namespace) -> int:
+    state = read_json(args.state)
+    errors = validate_state(state)
+    if errors:
+        raise ContinuityError("cannot recover into invalid state: " + "; ".join(errors))
+    recovery = read_json(args.input)
+    if not isinstance(recovery, dict):
+        raise ContinuityError("recovery input must be an object")
+    recovery_errors = required_field_errors(recovery, RECOVERY_INPUT_FIELDS, "recovery input")
+    recovery_errors.extend(unexpected_field_errors(recovery, RECOVERY_INPUT_FIELDS, "recovery input"))
+    context = recovery.get("context")
+    if not isinstance(context, dict):
+        recovery_errors.append("recovery input.context must be an object")
+    else:
+        for field in ("summary", "next_action"):
+            if not isinstance(context.get(field), str) or not context[field].strip():
+                recovery_errors.append(f"recovery input.context.{field} must be a nonempty string")
+        for field in ("decisions", "constraints", "open_questions"):
+            if field in context and not isinstance(context[field], list):
+                recovery_errors.append(f"recovery input.context.{field} must be an array")
+    for field in ("acceptance", "verification", "artifacts"):
+        if not isinstance(recovery.get(field), list):
+            recovery_errors.append(f"recovery input.{field} must be an array")
+    acceptance = recovery.get("acceptance")
+    if isinstance(acceptance, list):
+        if not acceptance:
+            recovery_errors.append("recovery input.acceptance must not be empty")
+        seen_ids: set[str] = set()
+        for index, item in enumerate(acceptance):
+            path = f"recovery input.acceptance[{index}]"
+            if not isinstance(item, dict):
+                recovery_errors.append(f"{path} must be an object")
+                continue
+            recovery_errors.extend(required_field_errors(item, {"id", "criterion"}, path))
+            recovery_errors.extend(string_field_errors(item, ("id", "criterion"), path))
+            recovery_errors.extend(nonempty_string_field_errors(item, ("id", "criterion"), path))
+            identifier = item.get("id")
+            if isinstance(identifier, str) and identifier:
+                if identifier in seen_ids:
+                    recovery_errors.append(f"{path}.id duplicates another acceptance criterion")
+                seen_ids.add(identifier)
+    verification = recovery.get("verification")
+    if isinstance(verification, list) and not any(
+        isinstance(item, dict)
+        and any(isinstance(item.get(field), str) and item[field].strip() for field in ("command", "check"))
+        for item in verification
+    ):
+        recovery_errors.append("recovery input.verification requires at least one command or check")
+    if recovery_errors:
+        raise ContinuityError("invalid recovery input: " + "; ".join(sorted(set(recovery_errors))))
+    violations = walk_violations(recovery)
+    if violations:
+        raise ContinuityError("invalid recovery input: " + "; ".join(violations))
+    changed = any(state[field] != recovery[field] for field in RECOVERY_INPUT_FIELDS)
+    for field in RECOVERY_INPUT_FIELDS:
+        state[field] = copy.deepcopy(recovery[field])
+    if changed:
+        state["audit"] = {"status": "pending", "findings": []}
+        state["continuity"]["phase"] = "audit"
+        state["continuity"]["status"] = "in_progress"
+    errors = validate_state(state)
+    if errors:
+        raise ContinuityError("cannot persist recovered state: " + "; ".join(errors))
+    write_json(args.output or args.state, state)
+    return 0
+
+
 def command_prepare(args: argparse.Namespace) -> int:
     state = read_json(args.state)
     errors = validate_state(state)
@@ -879,17 +989,45 @@ def launch_prompt(state: dict[str, Any], target_tool: str) -> str:
 
 
 def command_render(args: argparse.Namespace) -> int:
-    state = read_json(args.state)
-    errors = validate_state(state, require_prepared=True)
-    if errors:
-        raise ContinuityError("cannot render unprepared state: " + "; ".join(errors))
-    target = args.target_tool or state["continuity"].get("target_tool")
-    if not target:
-        raise ContinuityError("target tool is required")
-    sys.stdout.write(launch_prompt(state, target) if args.output in (None, "-") else "")
-    if args.output not in (None, "-"):
-        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
-        Path(args.output).write_text(launch_prompt(state, target), encoding="utf-8")
+    if args.output in (None, "-"):
+        state = read_json(args.state)
+        errors = validate_state(state, require_prepared=True)
+        if errors:
+            raise ContinuityError("cannot render unprepared state: " + "; ".join(errors))
+        prepared_target = state["continuity"].get("target_tool")
+        target = args.target_tool or prepared_target
+        if not target:
+            raise ContinuityError("target tool is required")
+        if args.target_tool is not None and args.target_tool != prepared_target:
+            raise ContinuityError("render target must match the prepared target tool")
+        sys.stdout.write(launch_prompt(state, target))
+        return 0
+
+    state_target, state_descriptor = open_checkpoint_state(args.state)
+    output_target: AuditTarget | None = None
+    output_stage: AuditStage | None = None
+    try:
+        state = read_json_descriptor(state_descriptor, label="render checkpoint state")
+        errors = validate_state(state, require_prepared=True)
+        if errors:
+            raise ContinuityError("cannot render unprepared state: " + "; ".join(errors))
+        prepared_target = state["continuity"].get("target_tool")
+        target = args.target_tool or prepared_target
+        if not target:
+            raise ContinuityError("target tool is required")
+        if args.target_tool is not None and args.target_tool != prepared_target:
+            raise ContinuityError("render target must match the prepared target tool")
+        if audit_output_targets_state(args.state, args.output):
+            raise ContinuityError("render output must not overwrite the checkpoint state")
+        output_target = open_report_target(args.output, state_target.identity or (-1, -1))
+        output_stage = stage_text(output_target, launch_prompt(state, target), label="render launch output")
+        commit_stage(output_stage, label="render launch output")
+    finally:
+        cleanup_stage(output_stage)
+        os.close(state_descriptor)
+        if output_target is not None:
+            os.close(output_target.parent_descriptor)
+        os.close(state_target.parent_descriptor)
     return 0
 
 
@@ -1002,6 +1140,11 @@ def parser() -> argparse.ArgumentParser:
     capture.add_argument("--input", required=True)
     capture.add_argument("--output")
     capture.set_defaults(func=command_capture)
+    recover = sub.add_parser("recover", help="ingest Pickup and Conductor recovery state")
+    recover.add_argument("--state", required=True)
+    recover.add_argument("--input", required=True)
+    recover.add_argument("--output")
+    recover.set_defaults(func=command_recover)
     prepare = sub.add_parser("prepare-switch", aliases=["prepare"])
     prepare.add_argument("--state", required=True)
     prepare.add_argument("--target-tool", "--target", required=True)
