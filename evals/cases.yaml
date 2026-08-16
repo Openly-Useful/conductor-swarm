@@ -133,8 +133,9 @@ cases:
       - "Pickup then Conductor"
       - "audit and validate"
       - "prepare-switch --target-tool claude-code"
+      - "verify that the exact rendered file exists"
       - "exactly one final shell command"
       - "claude --continue"
-      - "does not import a Codex, ChatGPT, or ordinary Claude.ai chat"
+      - "including a Claude.ai conversation about the same repository"
     forbids:
       - "guess a session ID"

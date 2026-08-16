@@ -39,9 +39,11 @@ the prepared prompt inside the repository:
 python scripts/continuity.py render --state .continuity/continuity.json --target-tool claude-code --output .continuity/launch/claude.txt
 ```
 
-The source chat then returns exactly one shell command. Use the existing-session
-form only when the user intends to continue the most recent native Claude Code
-conversation in that repository:
+Before returning a command, the source chat verifies that the launch file was
+rendered and that the checkpoint still validates. It must not launch Claude Code
+itself. The source chat then returns exactly one shell command. Use the
+existing-session form only when the user intends to continue the most recent
+native Claude Code conversation in that repository:
 
 ```text
 cd '<approved workspace>' && claude --continue "$(cat .continuity/launch/claude.txt)"
@@ -53,6 +55,8 @@ Otherwise start a new Claude Code session:
 cd '<approved workspace>' && claude "$(cat .continuity/launch/claude.txt)"
 ```
 
-The current chat must not claim that either form imports its transcript. The
-rendered checkpoint is the transfer boundary. Do not put the workspace path,
-native session ID, or raw transcript in the checkpoint or launch file.
+The current chat must not claim that either form imports its transcript. In
+particular, a Codex/ChatGPT chat and an ordinary Claude.ai conversation cannot
+be resumed as that native Claude Code session. The rendered checkpoint is the
+transfer boundary. Do not put the workspace path, native session ID, or raw
+transcript in the checkpoint or launch file.

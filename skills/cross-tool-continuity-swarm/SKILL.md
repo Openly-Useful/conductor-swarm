@@ -36,12 +36,12 @@ When the user asks for one prompt to paste into the current chat and one termina
 
 1. Run Pickup then Conductor when prior work exists; audit and validate the current repository state.
 2. Write the validated checkpoint inside the approved repository and run `prepare-switch --target-tool claude-code`.
-3. Render the destination prompt to a repository-relative file such as `.continuity/launch/claude.txt`.
-4. Return exactly one final shell command in one fenced code block. Put no explanatory prose after that block.
+3. Render the destination prompt to a repository-relative file such as `.continuity/launch/claude.txt`, then verify that the exact rendered file exists and the checkpoint still validates.
+4. Do not start Claude Code yourself. Return exactly one final shell command in one fenced code block only after those checks pass. Put no explanatory prose after that block.
 
 For an existing Claude Code session in the same repository, the command must use `claude --continue "$(cat .continuity/launch/claude.txt)"`. For a new Claude Code session, use `claude "$(cat .continuity/launch/claude.txt)"`. Prefix either form with a shell-quoted `cd` to the approved workspace when the user will run it from elsewhere.
 
-`--continue` resumes only the most recent native Claude Code conversation for that directory. It does not import a Codex, ChatGPT, or ordinary Claude.ai chat. Never infer a native session identifier; use `--resume <id>` only when the user explicitly provides a verified Claude Code session ID. The shell command may contain a local workspace path, but the checkpoint and launch prompt must not.
+`--continue` resumes only the most recent native Claude Code conversation for that directory. It does not import a Codex, ChatGPT, or ordinary Claude.ai chat, including a Claude.ai conversation about the same repository. A cross-tool capsule starts from a new handoff boundary; it does not make two providers share a native thread. Never infer a native session identifier; use `--resume <id>` only when the user explicitly provides a verified Claude Code session ID. The shell command may contain a local workspace path, but the checkpoint and launch prompt must not.
 
 ## Contracts
 
