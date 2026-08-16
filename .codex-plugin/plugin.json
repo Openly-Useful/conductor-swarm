@@ -1,6 +1,6 @@
 {
   "name": "conductor-swarm",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Model-agnostic orchestration that discovers available capabilities, activates only what the work needs, and verifies completion.",
   "author": {
     "name": "Openly Useful",

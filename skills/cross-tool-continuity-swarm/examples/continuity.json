@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.1.0",
+  "kind": "cross-tool-continuity",
+  "project": {"id": "example-project", "objective": "Finish the bounded implementation", "scope": "Repository changes and tests only"},
+  "continuity": {"phase": "prepare", "status": "ready", "source_tool": "source-tool", "target_tool": "target-tool"},
+  "context": {"summary": "Implementation is ready for an independent review.", "decisions": ["Keep the public interface unchanged"], "constraints": ["No external writes"], "next_action": "Run the listed verification commands and inspect the diff.", "open_questions": []},
+  "acceptance": [{"id": "a1", "criterion": "All required tests pass"}],
+  "verification": [{"command": "python -m unittest", "status": "pending"}],
+  "artifacts": [{"path": "src/example.py", "role": "implementation"}],
+  "evidence": [{"id": "ev_example", "kind": "observation", "summary": "Scope and acceptance criteria were reviewed.", "provenance": "user-supplied", "confidence": "verified"}],
+  "sync": [],
+  "audit": {"status": "passed", "findings": []},
+  "idempotency": {"algorithm": "sha256-canonical-json", "state_id": "example-state-id"}
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openlyuseful.org/schemas/continuity-handoff-1.1.0.json",
+  "title": "Prepared continuity handoff",
+  "type": "object",
+  "required": ["schema_version", "project", "continuity", "context", "acceptance", "verification", "artifacts", "audit"],
+  "properties": {
+    "schema_version": {"const": "1.1.0"},
+    "project": {"type": "object"},
+    "continuity": {"type": "object", "required": ["phase", "target_tool"]},
+    "context": {"type": "object", "required": ["next_action"]},
+    "acceptance": {"type": "array"},
+    "verification": {"type": "array"},
+    "artifacts": {"type": "array"},
+    "audit": {"type": "object"}
+  },
+  "description": "The transferable portion is serialized as UTF-8 and must be no larger than 32768 bytes. No local-only values are permitted."
+}

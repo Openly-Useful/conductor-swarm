@@ -90,7 +90,7 @@ def validate_skill(skill_dir: Path) -> None:
 
 def validate_plugin() -> None:
     manifest = json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
-    if manifest["name"] != "conductor-swarm" or manifest["version"] != "1.0.2":
+    if manifest["name"] != "conductor-swarm" or manifest["version"] != "1.1.0":
         raise AssertionError("plugin identity/version mismatch")
     if manifest.get("skills") != "./skills/":
         raise AssertionError("plugin must expose ./skills/")
@@ -103,8 +103,8 @@ def validate_plugin() -> None:
 
 def main() -> None:
     skills = sorted((ROOT / "skills").glob("*/SKILL.md"))
-    if [path.parent.name for path in skills] != ["conductor-swarm", "pickup-swarm"]:
-        raise AssertionError("expected conductor-swarm and pickup-swarm skills")
+    if [path.parent.name for path in skills] != ["conductor-swarm", "cross-tool-continuity-swarm", "pickup-swarm"]:
+        raise AssertionError("expected conductor-swarm, cross-tool-continuity-swarm, and pickup-swarm skills")
     for skill_file in skills:
         validate_skill(skill_file.parent)
     validate_plugin()
