@@ -125,3 +125,16 @@ cases:
       - "review repository state"
     forbids:
       - "accept a ready handoff"
+
+  - id: continuity-one-command-claude-code
+    skill: cross-tool-continuity-swarm
+    prompt: Prepare this current chat as one command I can run to continue in an existing Claude Code session.
+    requires:
+      - "Pickup then Conductor"
+      - "audit and validate"
+      - "prepare-switch --target-tool claude-code"
+      - "exactly one final shell command"
+      - "claude --continue"
+      - "does not import a Codex, ChatGPT, or ordinary Claude.ai chat"
+    forbids:
+      - "guess a session ID"

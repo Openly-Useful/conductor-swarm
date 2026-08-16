@@ -1,6 +1,6 @@
 ---
 name: cross-tool-continuity-swarm
-description: Use when work must move between AI coding tools, survive a paused session, or be resumed from a verified checkpoint. Audit portable project state, capture evidence, prepare and review a bounded handoff, record synchronization, generate a launch prompt, and resume only after current verification.
+description: Use when work must move between AI coding tools, survive a paused session, be resumed from a verified checkpoint, or be prepared as a one-command Claude Code continuation. Audit portable project state, capture evidence, prepare and review a bounded handoff, record synchronization, generate a launch prompt, and resume only after current verification.
 ---
 
 # Cross-Tool Continuity Swarm
@@ -29,6 +29,19 @@ python scripts/continuity.py status --state continuity.json
 ```
 
 All commands are deterministic. Use explicit input values for dates and identifiers; never add a clock, random ID, machine identifier, absolute path, credential, or other local-only value merely because a host exposes one. Repeating an operation with the same canonical input must produce the same state and must not duplicate evidence or sync events.
+
+## One-command Claude Code handoff
+
+When the user asks for one prompt to paste into the current chat and one terminal command to continue in Claude Code, complete the normal recovery and preparation workflow first. Do not manufacture a handoff from narrative context alone.
+
+1. Run Pickup then Conductor when prior work exists; audit and validate the current repository state.
+2. Write the validated checkpoint inside the approved repository and run `prepare-switch --target-tool claude-code`.
+3. Render the destination prompt to a repository-relative file such as `.continuity/launch/claude.txt`.
+4. Return exactly one final shell command in one fenced code block. Put no explanatory prose after that block.
+
+For an existing Claude Code session in the same repository, the command must use `claude --continue "$(cat .continuity/launch/claude.txt)"`. For a new Claude Code session, use `claude "$(cat .continuity/launch/claude.txt)"`. Prefix either form with a shell-quoted `cd` to the approved workspace when the user will run it from elsewhere.
+
+`--continue` resumes only the most recent native Claude Code conversation for that directory. It does not import a Codex, ChatGPT, or ordinary Claude.ai chat. Never infer a native session identifier; use `--resume <id>` only when the user explicitly provides a verified Claude Code session ID. The shell command may contain a local workspace path, but the checkpoint and launch prompt must not.
 
 ## Contracts
 

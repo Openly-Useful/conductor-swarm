@@ -29,3 +29,30 @@ quality floor protected; never claim that a switch occurred.
    tests, acceptance criteria, and rollback boundary before editing.
 5. Record a sync event only after the receiving side reports what it actually
    read or applied. A launch prompt alone is not synchronization evidence.
+
+## One-command Claude Code continuation
+
+After the source chat has completed audit, validation, and preparation, render
+the prepared prompt inside the repository:
+
+```text
+python scripts/continuity.py render --state .continuity/continuity.json --target-tool claude-code --output .continuity/launch/claude.txt
+```
+
+The source chat then returns exactly one shell command. Use the existing-session
+form only when the user intends to continue the most recent native Claude Code
+conversation in that repository:
+
+```text
+cd '<approved workspace>' && claude --continue "$(cat .continuity/launch/claude.txt)"
+```
+
+Otherwise start a new Claude Code session:
+
+```text
+cd '<approved workspace>' && claude "$(cat .continuity/launch/claude.txt)"
+```
+
+The current chat must not claim that either form imports its transcript. The
+rendered checkpoint is the transfer boundary. Do not put the workspace path,
+native session ID, or raw transcript in the checkpoint or launch file.
