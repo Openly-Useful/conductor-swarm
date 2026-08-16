@@ -1,0 +1,8 @@
+{
+  "source_tool": "source-tool",
+  "target_tool": "target-tool",
+  "status": "recorded",
+  "summary": "The prepared checkpoint was transferred for review.",
+  "provenance": "user-supplied",
+  "evidence": [{"summary": "Target acknowledged receipt", "confidence": "claimed"}]
+}

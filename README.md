@@ -33,6 +33,14 @@ The recovery component used when work already exists:
 - identifies safe optimizations without mixing risky refactors into recovery;
 - prepares non-overlapping sub-agent continuation briefs with baselines, tests, rollback boundaries, and escalation conditions.
 
+### `cross-tool-continuity-swarm`
+
+The portable continuity component used when work crosses tools or sessions:
+
+- keeps a deterministic, provider-neutral checkpoint with verified evidence and explicit audit, prepare, sync, switch, review, and resume contracts;
+- enforces a 32 KiB transferable-context cap, rejects common local-only values, and makes evidence and synchronization idempotent;
+- renders a bounded text-block launch prompt for the receiving tool and composes with Pickup Swarm before Conductor Swarm routing.
+
 ## Model-agnostic by design
 
 Conductor Swarm never hard-codes vendor model names. It uses four portable profiles:
@@ -57,7 +65,7 @@ gh skill install Openly-Useful/conductor-swarm --all --agent universal --scope u
 ### skills.sh-compatible CLI
 
 ```bash
-npx skills add Openly-Useful/conductor-swarm --skill conductor-swarm pickup-swarm
+npx skills add Openly-Useful/conductor-swarm --skill conductor-swarm pickup-swarm cross-tool-continuity-swarm
 ```
 
 ### Codex skill installer
@@ -103,7 +111,7 @@ identify safe optimizations, and prepare clean continuation briefs.
 - Codex/ChatGPT skill-only plugin manifest under `.codex-plugin/plugin.json`
 - skills.sh-compatible repository layout
 
-See the tested [compatibility matrix](COMPATIBILITY.md) and the repeatable behavioral contracts in [`evals/cases.yaml`](evals/cases.yaml).
+See the tested [compatibility matrix](COMPATIBILITY.md), the repeatable behavioral contracts in [`evals/cases.yaml`](evals/cases.yaml), and the deterministic continuity CLI under `skills/cross-tool-continuity-swarm/scripts/continuity.py`.
 
 ## Support and policies
 

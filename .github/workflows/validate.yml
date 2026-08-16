@@ -18,3 +18,4 @@ jobs:
       - run: python3 -m pip install -r requirements-dev.txt
       - run: python3 scripts/validate.py
       - run: python3 scripts/run_evals.py
+      - run: python3 scripts/test_continuity.py

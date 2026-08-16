@@ -88,3 +88,40 @@ cases:
       - "the exact next action when anything remains"
     forbids:
       - "Treat agent confidence as completion evidence"
+
+  - id: continuity-pickup-conductor-composition
+    skill: cross-tool-continuity-swarm
+    prompt: Resume a project that is moving from one coding tool to another.
+    requires:
+      - "Pickup Swarm first"
+      - "Conductor Swarm"
+      - "audit"
+      - "prepare"
+      - "sync"
+      - "switch"
+      - "review"
+      - "resume"
+    forbids:
+      - "continue from narrative context alone"
+
+  - id: continuity-portable-safety
+    skill: cross-tool-continuity-swarm
+    prompt: Prepare a portable handoff without leaking machine state or exceeding context limits.
+    requires:
+      - "32 KiB"
+      - "Prohibited local-only values"
+      - "stable idempotency"
+      - "text-block launch prompt"
+      - "provider-neutral"
+    forbids:
+      - "use absolute filesystem paths"
+
+  - id: continuity-evidence-boundary
+    skill: cross-tool-continuity-swarm
+    prompt: A receiving tool gets a handoff that claims tests passed.
+    requires:
+      - "A report of success, a handoff, or agent confidence is not completion evidence"
+      - "validate the checkpoint"
+      - "review repository state"
+    forbids:
+      - "accept a ready handoff"
