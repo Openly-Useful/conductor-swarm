@@ -20,14 +20,16 @@ quality floor protected; never claim that a switch occurred.
 
 ## Switch procedure
 
-1. On the source side run `validate`, then `audit`.
-2. Run `prepare-switch --target-tool <portable target identifier>` and keep the
+1. Capture and read back the current source session through the protected local
+   lineage store described in `session-lineage.md`.
+2. On the source side run `validate`, then `audit`.
+3. Run `prepare-switch --target-tool <portable target identifier>` and keep the
    generated JSON checkpoint under the user's approved project boundary.
-3. Run `render` and transfer the complete text block through an approved
+4. Run `render` and transfer the complete text block through an approved
    channel. Do not transfer secrets or local-only values.
-4. On the receiving side validate the checkpoint and review repository state,
+5. On the receiving side validate the checkpoint and review repository state,
    tests, acceptance criteria, and rollback boundary before editing.
-5. Record a sync event only after the receiving side reports what it actually
+6. Record a sync event only after the receiving side reports what it actually
    read or applied. A launch prompt alone is not synchronization evidence.
 
 ## One-command Claude Code continuation
@@ -39,8 +41,9 @@ the prepared prompt inside the repository:
 python scripts/continuity.py render --state .continuity/continuity.json --target-tool claude-code --output .continuity/launch/claude.txt
 ```
 
-Before returning a command, the source chat verifies that the launch file was
-rendered and that the checkpoint still validates. It must not launch Claude Code
+Before returning a command, the source chat verifies that local source lineage
+was captured and read back, the launch file was rendered for the prepared
+target, and the checkpoint still validates. It must not launch Claude Code
 itself. The source chat then returns exactly one shell command. Use the
 existing-session form only when the user intends to continue the most recent
 native Claude Code conversation in that repository:

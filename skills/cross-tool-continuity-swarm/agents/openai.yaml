@@ -1,4 +1,4 @@
 interface:
   display_name: "Cross-Tool Continuity Swarm"
-  short_description: "Audit, package, and launch work across tools"
-  default_prompt: "Use $cross-tool-continuity-swarm to prepare a verified one-command Claude Code handoff for this task."
+  short_description: "Capture lineage and launch work across tools"
+  default_prompt: "Use $cross-tool-continuity-swarm to capture this task’s local session lineage and prepare a verified one-command Claude Code handoff."
