@@ -20,12 +20,46 @@ quality floor protected; never claim that a switch occurred.
 
 ## Switch procedure
 
-1. On the source side run `validate`, then `audit`.
-2. Run `prepare-switch --target-tool <portable target identifier>` and keep the
+1. Capture and read back the current source session through the protected local
+   lineage store described in `session-lineage.md`.
+2. On the source side run `validate`, then `audit`.
+3. Run `prepare-switch --target-tool <portable target identifier>` and keep the
    generated JSON checkpoint under the user's approved project boundary.
-3. Run `render` and transfer the complete text block through an approved
+4. Run `render` and transfer the complete text block through an approved
    channel. Do not transfer secrets or local-only values.
-4. On the receiving side validate the checkpoint and review repository state,
+5. On the receiving side validate the checkpoint and review repository state,
    tests, acceptance criteria, and rollback boundary before editing.
-5. Record a sync event only after the receiving side reports what it actually
+6. Record a sync event only after the receiving side reports what it actually
    read or applied. A launch prompt alone is not synchronization evidence.
+
+## One-command Claude Code continuation
+
+After the source chat has completed audit, validation, and preparation, render
+the prepared prompt inside the repository:
+
+```text
+python scripts/continuity.py render --state .continuity/continuity.json --target-tool claude-code --output .continuity/launch/claude.txt
+```
+
+Before returning a command, the source chat verifies that local source lineage
+was captured and read back, the launch file was rendered for the prepared
+target, and the checkpoint still validates. It must not launch Claude Code
+itself. The source chat then returns exactly one shell command. Use the
+existing-session form only when the user intends to continue the most recent
+native Claude Code conversation in that repository:
+
+```text
+cd '<approved workspace>' && claude --continue "$(cat .continuity/launch/claude.txt)"
+```
+
+Otherwise start a new Claude Code session:
+
+```text
+cd '<approved workspace>' && claude "$(cat .continuity/launch/claude.txt)"
+```
+
+The current chat must not claim that either form imports its transcript. In
+particular, a Codex/ChatGPT chat and an ordinary Claude.ai conversation cannot
+be resumed as that native Claude Code session. The rendered checkpoint is the
+transfer boundary. Do not put the workspace path, native session ID, or raw
+transcript in the checkpoint or launch file.

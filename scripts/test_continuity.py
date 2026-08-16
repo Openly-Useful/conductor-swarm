@@ -87,6 +87,23 @@ class ContinuityCliTest(unittest.TestCase):
         return json.loads(path.read_text(encoding="utf-8"))
 
     def prepare_verified_state(self) -> None:
+        recovery = self.write_json(
+            "recovery.json",
+            {
+                "context": {
+                    "summary": "The bounded implementation is ready for continuation.",
+                    "decisions": ["Preserve the public interface."],
+                    "constraints": ["No external writes."],
+                    "next_action": "Run the verification command and inspect the current diff.",
+                    "open_questions": [],
+                },
+                "acceptance": [{"id": "a1", "criterion": "The required verification passes."}],
+                "verification": [{"command": "python3 -m unittest", "status": "pending"}],
+                "artifacts": [{"path": "src/example.py", "role": "implementation"}],
+            },
+        )
+        result = self.run_cli("recover", "--state", str(self.state), "--input", str(recovery))
+        self.assertEqual(result.returncode, 0, result.stderr)
         evidence = self.write_json(
             "evidence.json",
             {
@@ -120,7 +137,50 @@ class ContinuityCliTest(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("persisted audit.status 'passed'", result.stderr)
         self.assertIn("persisted verified evidence", result.stderr)
+        self.assertIn("recovered context summary", result.stderr)
+        self.assertIn("at least one acceptance criterion", result.stderr)
+        self.assertIn("verification command or check", result.stderr)
         self.assertEqual(self.state.read_bytes(), before)
+
+    def test_recover_requires_actionable_bounded_state_and_is_idempotent(self) -> None:
+        incomplete = self.write_json(
+            "incomplete-recovery.json",
+            {
+                "context": {"summary": "", "next_action": ""},
+                "acceptance": [],
+                "verification": [],
+                "artifacts": [],
+            },
+        )
+        before = self.state.read_bytes()
+        rejected = self.run_cli("recover", "--state", str(self.state), "--input", str(incomplete))
+        self.assertEqual(rejected.returncode, 2)
+        self.assertIn("context.summary must be a nonempty string", rejected.stderr)
+        self.assertIn("acceptance must not be empty", rejected.stderr)
+        self.assertIn("requires at least one command or check", rejected.stderr)
+        self.assertEqual(self.state.read_bytes(), before)
+
+        valid = self.write_json(
+            "valid-recovery.json",
+            {
+                "context": {
+                    "summary": "Recovered bounded state.",
+                    "next_action": "Run the focused verification.",
+                    "decisions": [],
+                    "constraints": [],
+                    "open_questions": [],
+                },
+                "acceptance": [{"id": "a1", "criterion": "Focused verification passes."}],
+                "verification": [{"check": "Inspect the focused verification result."}],
+                "artifacts": [],
+            },
+        )
+        first = self.run_cli("recover", "--state", str(self.state), "--input", str(valid))
+        self.assertEqual(first.returncode, 0, first.stderr)
+        first_bytes = self.state.read_bytes()
+        retry = self.run_cli("recover", "--state", str(self.state), "--input", str(valid))
+        self.assertEqual(retry.returncode, 0, retry.stderr)
+        self.assertEqual(self.state.read_bytes(), first_bytes)
 
     def test_empty_evidence_fields_are_rejected_and_cannot_unlock_audit_or_prepare(self) -> None:
         for field in ("summary", "kind", "provenance"):
@@ -752,6 +812,86 @@ class ContinuityCliTest(unittest.TestCase):
                 continuity.launch_prompt(state, "receiver")
         finally:
             continuity.CONTEXT_CAP = original_cap
+
+    def test_render_requires_the_prepared_target_and_preserves_checkpoint(self) -> None:
+        self.prepare_verified_state()
+        before = self.state.read_bytes()
+        output = self.directory / "launch.txt"
+
+        mismatch = self.run_cli(
+            "render",
+            "--state",
+            str(self.state),
+            "--target-tool",
+            "different-target",
+            "--output",
+            str(output),
+        )
+        self.assertEqual(mismatch.returncode, 2)
+        self.assertIn("render target must match the prepared target tool", mismatch.stderr)
+        self.assertFalse(output.exists())
+        self.assertEqual(self.state.read_bytes(), before)
+
+        overwrite = self.run_cli(
+            "render",
+            "--state",
+            str(self.state),
+            "--target-tool",
+            "receiver",
+            "--output",
+            str(self.state),
+        )
+        self.assertEqual(overwrite.returncode, 2)
+        self.assertIn("must not overwrite the checkpoint state", overwrite.stderr)
+        self.assertEqual(self.state.read_bytes(), before)
+        self.assertTrue(json.loads(self.state.read_text(encoding="utf-8")))
+
+    def test_render_is_atomic_idempotent_and_rejects_output_aliases(self) -> None:
+        self.prepare_verified_state()
+        before = self.state.read_bytes()
+        output = self.directory / "new" / "nested" / "claude.txt"
+
+        first = self.run_cli(
+            "render",
+            "--state",
+            str(self.state),
+            "--target-tool",
+            "receiver",
+            "--output",
+            str(output),
+        )
+        self.assertEqual(first.returncode, 0, first.stderr)
+        first_bytes = output.read_bytes()
+        self.assertIn(b"TARGET_TOOL: receiver", first_bytes)
+        second = self.run_cli(
+            "render",
+            "--state",
+            str(self.state),
+            "--target-tool",
+            "receiver",
+            "--output",
+            str(output),
+        )
+        self.assertEqual(second.returncode, 0, second.stderr)
+        self.assertEqual(output.read_bytes(), first_bytes)
+        self.assertEqual(self.state.read_bytes(), before)
+
+        alias = self.directory / "state-alias.txt"
+        alias.symlink_to(self.state)
+        rejected = self.run_cli(
+            "render",
+            "--state",
+            str(self.state),
+            "--target-tool",
+            "receiver",
+            "--output",
+            str(alias),
+        )
+        self.assertEqual(rejected.returncode, 2)
+        self.assertIn("regular non-symlink", rejected.stderr)
+        self.assertEqual(self.state.read_bytes(), before)
+        self.assertEqual(alias.read_bytes(), before)
+        self.assert_no_audit_temps()
 
 
 if __name__ == "__main__":

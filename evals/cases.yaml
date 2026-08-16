@@ -125,3 +125,34 @@ cases:
       - "review repository state"
     forbids:
       - "accept a ready handoff"
+
+  - id: continuity-one-command-claude-code
+    skill: cross-tool-continuity-swarm
+    prompt: Prepare this current chat as one command I can run to continue in an existing Claude Code session.
+    requires:
+      - "Pickup then Conductor"
+      - "current source thread identifier was captured and read back"
+      - "recover"
+      - "at least one acceptance criterion"
+      - "audit and validate"
+      - "prepare-switch --target-tool claude-code"
+      - "verify that the exact rendered file exists"
+      - "exactly one final shell command"
+      - "claude --continue"
+      - "including a Claude.ai conversation about the same repository"
+    forbids:
+      - "guess a session ID"
+
+  - id: continuity-local-session-lineage
+    skill: cross-tool-continuity-swarm
+    prompt: Invoke continuity for this current task and preserve its unique thread ID for later reference.
+    requires:
+      - "exact current source thread, task, conversation, or session identifier"
+      - "supported host lifecycle interface"
+      - "protected local lineage store"
+      - "read it back and verify"
+      - "Repeated invocations must upsert the same link rather than duplicate it"
+      - "must never contain the raw identifier"
+    forbids:
+      - "put the session ID in .continuity"
+      - "infer it from a transcript filename"
