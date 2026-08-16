@@ -1,13 +1,13 @@
 {
   "name": "conductor-swarm",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Model-agnostic orchestration that discovers available capabilities, activates only what the work needs, and verifies completion.",
   "author": {
     "name": "Openly Useful",
     "url": "https://openlyuseful.org"
   },
-  "homepage": "https://github.com/Openly-Useful/conductor-swarm",
-  "repository": "https://github.com/Openly-Useful/conductor-swarm",
+  "homepage": "https://github.com/Openly-Useful/agent-workflow-swarms",
+  "repository": "https://github.com/Openly-Useful/agent-workflow-swarms",
   "license": "MIT",
   "keywords": [
     "agent-skills",
@@ -28,8 +28,8 @@
       "Orchestration"
     ],
     "websiteURL": "https://openlyuseful.org",
-    "privacyPolicyURL": "https://github.com/Openly-Useful/conductor-swarm/blob/main/PRIVACY.md",
-    "termsOfServiceURL": "https://github.com/Openly-Useful/conductor-swarm/blob/main/TERMS.md",
+    "privacyPolicyURL": "https://github.com/Openly-Useful/agent-workflow-swarms/blob/main/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/Openly-Useful/agent-workflow-swarms/blob/main/TERMS.md",
     "defaultPrompt": [
       "Inventory my available models and skills, then route this project to completion.",
       "Resume paused workflows and prepare safe sub-agent continuation briefs.",
