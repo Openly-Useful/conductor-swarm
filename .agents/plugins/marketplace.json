@@ -1,0 +1,20 @@
+{
+  "name": "agent-workflow-swarms",
+  "interface": {
+    "displayName": "Openly Useful"
+  },
+  "plugins": [
+    {
+      "name": "conductor-swarm",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

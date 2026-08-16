@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "canonicalURL": "https://openlyuseful.org/publisher/manifest.json",
+  "publisher": {
+    "displayName": "Openly Useful",
+    "homepage": "https://openlyuseful.org",
+    "studio": "https://openlyuseful.com",
+    "publicContact": "hello@openlyuseful.org"
+  },
+  "policies": {
+    "privacy": "https://openlyuseful.org/legal/privacy",
+    "terms": "https://openlyuseful.org/legal/terms",
+    "security": "https://openlyuseful.org/security",
+    "support": "https://openlyuseful.org/support"
+  },
+  "policyMirrors": {
+    "privacy": "https://github.com/Openly-Useful/agent-workflow-swarms/blob/main/PRIVACY.md",
+    "terms": "https://github.com/Openly-Useful/agent-workflow-swarms/blob/main/TERMS.md",
+    "security": "https://github.com/Openly-Useful/agent-workflow-swarms/blob/main/SECURITY.md",
+    "support": "https://github.com/Openly-Useful/agent-workflow-swarms/blob/main/SUPPORT.md"
+  },
+  "components": [
+    {
+      "name": "conductor-swarm",
+      "repository": "https://github.com/Openly-Useful/agent-workflow-swarms"
+    }
+  ]
+}
