@@ -77,7 +77,9 @@ Use $skill-installer to install all three skills from
 https://github.com/Openly-Useful/agent-workflow-swarms/tree/main/skills
 ```
 
-The repository also includes a `.codex-plugin/plugin.json` manifest for packaging as a skill-only ChatGPT/Codex plugin.
+The repository is also a root-level, skill-only plugin for both OpenAI/Codex and Claude. `.codex-plugin/plugin.json` and `.claude-plugin/plugin.json` both point to the same canonical `./skills/` directory; no wrapper copies of `SKILL.md` are generated. Repository-local catalogs live at `.agents/plugins/marketplace.json` and `.claude-plugin/marketplace.json`, with the repository root as their plugin source.
+
+These files prepare local discovery only. They do not install or publish the plugin, and they declare no MCP server or app. `publisher/publisher.json` derives the Openly Useful publisher identity and policy URLs from <https://openlyuseful.org/publisher/manifest.json>, the published authority endpoint. Each live policy page and the authority manifest itself has a version-controlled 1:1 source in the [openlyuseful.org site repository](https://github.com/Openly-Useful/openlyuseful.org), declared through `policyMirrors` and `authorityManifestMirror`; this repository's `PRIVACY.md`, `TERMS.md`, `SECURITY.md`, and `SUPPORT.md` remain the component-level policies for the skills package. Openly Useful LLC remains a planned, formation-pending publisher/operator/licensee, and external publication authorization remains withheld.
 
 ## Use
 
@@ -109,9 +111,17 @@ identify safe optimizations, and prepare clean continuation briefs.
 - [Agent Skills specification](https://agentskills.io/specification)
 - GitHub Agent Skills discovery under `skills/*/SKILL.md`
 - Codex/ChatGPT skill-only plugin manifest under `.codex-plugin/plugin.json`
+- Claude skill-only plugin manifest under `.claude-plugin/plugin.json`
+- repository-local Codex and Claude marketplace catalogs
 - skills.sh-compatible repository layout
 
 See the tested [compatibility matrix](COMPATIBILITY.md), the repeatable behavioral contracts in [`evals/cases.yaml`](evals/cases.yaml), and the deterministic continuity CLI under `skills/cross-tool-continuity-swarm/scripts/continuity.py`.
+
+Validate canonical skill uniqueness, provider manifests, marketplace entries, publisher metadata, and formation-pending publication state with:
+
+```sh
+python3 scripts/validate.py
+```
 
 ## Support and policies
 

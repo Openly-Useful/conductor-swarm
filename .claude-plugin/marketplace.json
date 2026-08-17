@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "agent-workflow-swarms",
+  "version": "1.2.0",
+  "description": "Openly Useful model-agnostic orchestration, recovery, and cross-tool continuity skills.",
+  "owner": {
+    "name": "Openly Useful",
+    "email": "hello@openlyuseful.org",
+    "url": "https://openlyuseful.org"
+  },
+  "plugins": [
+    {
+      "name": "conductor-swarm",
+      "source": "./",
+      "description": "Model-agnostic orchestration, workflow recovery, and cross-tool continuity with evidence-backed completion.",
+      "version": "1.2.0",
+      "author": {
+        "name": "Openly Useful",
+        "email": "hello@openlyuseful.org",
+        "url": "https://openlyuseful.org"
+      },
+      "category": "productivity",
+      "strict": true
+    }
+  ]
+}
