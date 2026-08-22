@@ -8,6 +8,8 @@
 
 Agent Workflow Swarms is a model-agnostic collection for recovering, orchestrating, and transferring complex agent work. Its Conductor Swarm inventories the models, skills, tools, connectors, and agents that the current runtime actually exposes; activates only the capabilities the current phase needs; and keeps work moving until every in-scope acceptance criterion has current verification evidence.
 
+Learn more at [Openly Useful](https://openlyuseful.org/#projects).
+
 It is quality-first, not “cheapest-model-first.” Token and latency savings come from progressive skill loading, bounded context, reusable checkpoints, and sensible routing—not from skipping review, tests, integration, or risk work.
 
 ## Included skills
